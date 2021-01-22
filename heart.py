@@ -9,7 +9,6 @@ import os.path
 from os import path
 import keyboard
 
-
 print("Initializing Variables...")
 # initialize read from Arduino
 ser = serial.Serial('COM3', 9600, timeout=1) #change 'COM3' to proper port being used
@@ -31,6 +30,7 @@ file_name_csv=str(datetime.now().date()) #set the name of the CSV file to be the
 time.sleep(1)
 ser.flush()
 counter = 0
+fig=plt.figure(figsize=(15,5)) #set size of plot (width,length)
 
 def filter_data(data, low, high, order):
     nyquist = 0.5 * frequency
@@ -54,12 +54,11 @@ def store_to_csv(raw_data, raw_time):
         
 def save_file(filename):
     with open(filename, 'a') as file_handle: #'a' stands for append if file already exist, will make new file if it does not exist
-        row=str(raw_data[-1])+','+str(raw_time[-1])+'\n'
-        file_handle.write(row)        
+        row=str(raw_data[-1])+','+str(raw_time[-1])+'\n' #create string to house data in comma seperate format
+        file_handle.write(row) #write to csv file        
             
 def plot_live(signal_1):
     plt.cla()
-    #plt.plot(data_buffer)
     plt.plot(signal_1)
     plt.show(block=False)
     plt.pause(0.001)
@@ -101,8 +100,8 @@ try:
             continue
         if len(data_buffer) == buff_len:    
             raw_data.append(data_buffer[0]) #adding first element into csv array
-            raw_time.append(time.time())    #adding time to csv array
-            # FIFO
+            raw_time.append(float(time.time()))    #adding time to csv array...time is in total seconds from epoch time 01/01/1970
+            #First-In-First-Out - FIFO
             data_buffer[:-1] = data_buffer[1:]
             data_buffer[-1] = int(data)
         else:
