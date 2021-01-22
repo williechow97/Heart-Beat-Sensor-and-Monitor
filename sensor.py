@@ -20,16 +20,19 @@ time_data=[] #create array to hold seconds count
                                 #ASIDE: pxl only works for xlsx not xls
 file_name_csv='' #create name for csv file
 
-#plotting variables
-fig=plt.figure(figsize=(15,5))
-ax=fig.add_subplot(1,1,1)
-xs=[] #create array to hold time count for plotting PPG
-ys=[] #create array to hold data from Arduino for plotting PPG
-
 #Getting Time for title of Plot and Excel Sheet
 time_now=datetime.now().strftime("%B-%d-%Y %H:%M:%S")  #format current time in Mon-Day-Year Hour:Minute:Sec
 print(time_now)
 print('Begin reading and plotting data...')
+
+#plotting variables
+fig=plt.figure(figsize=(15,5))
+ax=fig.add_subplot(1,1,1)
+ax.relim()
+ax.autoscale_view()
+plt.subplots_adjust(bottom=0.25) #pad the bottom of the plot 
+xs=[] #create array to hold time count for plotting PPG
+ys=[] #create array to hold data from Arduino for plotting PPG
     
 #Initializing communication with Arudino
 arduino=serial.Serial('COM3',9600)  #telling python where arduino is...change to match port of Arduino
@@ -41,11 +44,14 @@ Param: self, list, list
 Descrip: Function that when called reads input from the arduino, decodes the input, and plots input data in real time
 '''
 def animate(self, xs, ys):
-    plot_data=arduino.readline().decode('ascii').rstrip('\r\n')    #getting data from arduino
+    try:
+        plot_data=arduino.readline().decode('ascii').rstrip('\r\n')    #getting data from arduino
+    except UnicodeDecodeError:
+        pass
     xs.append(str(datetime.now().time())) #creating x-axis label as the time in Year-Month-Day Hours:Minutes:Seconds as a float
     ys.append(float(plot_data))
 
-    #adding data to excel arrays
+    #adding data to csv arrays
     raw_data.append(float(ys[-1]))
     time_data.append((xs[-1]))    
         
@@ -58,13 +64,11 @@ def animate(self, xs, ys):
     ax.plot(xs,ys)
     
     #format plot
+    plt.title(time_now, fontsize=10) #create plot title
+    plt.xlabel('Time(sec)',fontsize=10) #x-axis label    
     plt.xticks(rotation=45, fontsize=8) #horizontal alightment: ha="right"
     ax.xaxis.set_major_locator(ticker.LinearLocator(8)) #set x-axis ticks to always display 8 value
-    plt.yticks(fontsize=10)
-    plt.ylim([int(min(ys))-1,int(max(ys))+1]) #set limits of y-axis
-    plt.subplots_adjust(bottom=0.25) #pad the bottom of the plot 
-    plt.title(time_now, fontsize=10) #create plot title
-    plt.xlabel('Time(sec)',fontsize=10) 
+    plt.yticks(fontsize=10) 
 
 def store_to_csv():
     file_name_csv=datetime.now().date() #set the name of the CSV file to be the date in YEAR-MONTH-DAY format
@@ -105,7 +109,7 @@ def main():
     call define function animate() to plot data in real time using FuncAnimation()
     Param: figure of plot, reference of function animate(), parameters for animate(), sampling rate
     '''    
-    ani=animation.FuncAnimation(fig, animate, fargs=(xs,ys))#, interval=1000) 
+    ani=animation.FuncAnimation(fig, animate, fargs=(xs,ys), interval=100) 
     plt.show()
     print("Finished plotting, begin to save data to excel...")
     # storing data in csv
