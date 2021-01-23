@@ -86,6 +86,7 @@ try:
                 peaks, _ = signal.find_peaks(temp_buffer, height=0)
                 # Check if each peak is really a heartbeat
                 for x in peaks:
+                    #change values to match heart beat amplitude accordingly
                     if temp_buffer[x] >= 1.0 and temp_buffer[x] <= 2.5:
                         # Append the index to the list
                         heartbeats.append(x)
