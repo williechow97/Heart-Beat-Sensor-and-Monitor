@@ -5,6 +5,6 @@ Senor.py --
   Uses matlibplot's built-in function FuncAnimation to handle the real time plotting
 **Problem is data received is too fast as FuncAnimation cannot keep up with the plot
 
-Heart.py --
+OfficialHeartBeatMonitor.py --
   Improved live plotting of data in real time to kept up with the fast sampling rate of Arduino
   Saves data in csv file
