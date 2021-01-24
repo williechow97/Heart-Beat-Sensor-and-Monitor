@@ -1,5 +1,5 @@
 # Sensor
-Code that will taken input from a sensor, decode the input data, store the data in an excel/csv file, and plot the data in real time.
+Code that will taken input from an IR sensor, decode the input data, store the data in an excel/csv file, and fitler data to get distinct heart beat peaks, and plot the data in real time.
 
 Senor.py -- 
   Uses matlibplot's built-in function FuncAnimation to handle the real time plotting
